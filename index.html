@@ -18,6 +18,7 @@ h1{margin:0;font-size:1.5rem;color:var(--acc)}
 .filtri label{display:flex;gap:6px;align-items:center;white-space:nowrap}
 button{font:inherit;padding:9px 14px;border:1px solid var(--riga);border-radius:8px;background:#fff;cursor:pointer}
 button:hover{background:#f0e8d8}
+.ordina{display:none;gap:8px;align-items:center}.ordina select{flex:1 1 auto}
 .conta{max-width:1200px;margin:0 auto;padding:2px 16px 8px;color:var(--tenue);font-size:.95rem}
 main{max-width:1200px;margin:0 auto;padding:0 16px 40px}
 table{width:100%;border-collapse:collapse;background:var(--scheda);border:1px solid var(--riga);border-radius:8px;overflow:hidden}
@@ -30,6 +31,7 @@ td.t{font-weight:600}
 .vuoto{padding:24px;text-align:center;color:var(--tenue)}
 .altri{display:block;margin:14px auto}
 @media(max-width:720px){
+ .ordina{display:flex;flex:1 1 100%}
  table,tbody,tr,td{display:block;width:100%}thead{display:none}
  table{background:none;border:0}
  tr{background:var(--scheda);border:1px solid var(--riga);border-radius:8px;margin-bottom:10px;padding:8px 10px}
@@ -41,13 +43,14 @@ td.t{font-weight:600}
 </style>
 </head>
 <body>
-<header><h1>Elenco titoli - La Dimora del Libro</h1><div class="agg">Aggiornamento del 08/11/2026 alle ore 21:08</div></header>
+<header><h1>Elenco titoli - La Dimora del Libro</h1><div class="agg">Aggiornamento del 08/11/2026 alle ore 21:20</div></header>
 <div class="filtri">
  <input type="search" id="q" placeholder="Cerca per titolo, autore, genere, editore..." autocomplete="off">
  <select id="g"><option value="">Tutti i generi</option></select>
  <select id="e"><option value="">Tutti gli editori</option></select>
  <label><input type="checkbox" id="d"> Solo disponibili</label>
  <button id="x" type="button">Azzera</button>
+ <div class="ordina"><select id="o" aria-label="Ordina per"></select><button id="dir" type="button" aria-label="Inverti l'ordine">\u25B2</button></div>
 </div>
 <div class="conta" id="n"></div>
 <main>
@@ -71,6 +74,9 @@ function riempi(sel,i){
  v.forEach(x=>{const o=document.createElement("option");o.value=o.textContent=x;sel.appendChild(o)});
 }
 riempi($("g"),2);riempi($("e"),4);
+COL.forEach((c,i)=>{const o=document.createElement("option");o.value=i;o.textContent="Ordina per: "+c;$("o").appendChild(o)});
+$("o").onchange=()=>{ord=+$("o").value;disc=false;mostrate=PASSO;applica()};
+$("dir").onclick=()=>{disc=!disc;mostrate=PASSO;applica()};
 COL.forEach((c,i)=>{const th=document.createElement("th");th.textContent=c;
  th.onclick=()=>{if(ord===i)disc=!disc;else{ord=i;disc=false}mostrate=PASSO;applica()};$("th").appendChild(th)});
 function applica(){
@@ -92,6 +98,7 @@ function disegna(){
   cella(tr,"",r[4],"Editore");cella(tr,"",r[5],"Edizione");
   const td=cella(tr,r[6]?"si":"no",r[6]?"Disponibile":"NON disponibile");tb.appendChild(tr);
  });
+ $("o").value=ord;$("dir").textContent=disc?"\u25BC":"\u25B2";
  [...$("th").children].forEach((th,i)=>{th.className=i===ord?"ord"+(disc?" disc":""):""});
  const t=filtrate.length;
  $("n").textContent=t===DATI.length?t+" titoli":t+" di "+DATI.length+" titoli";
